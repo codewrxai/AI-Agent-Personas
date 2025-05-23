@@ -181,7 +181,7 @@ agent.setDestination(destination);
 agent.teleport(destination);
 
 // Character Controller
-let character = new TOOLKIT.CharacterController(transform, scene);
+let character = TOOLKIT.SceneManager.GetComponent(transform, "TOOLKIT.CharacterController");
 let grounded = character.isGrounded();
 character.move(velocity);
 character.jump(speed);
