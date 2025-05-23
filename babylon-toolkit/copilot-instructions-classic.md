@@ -1,4 +1,4 @@
-# Instructions (1.0.0)
+# Code Generation Instructions (1.0.0)
 
 ## 🧠 Paradigm
 
@@ -10,9 +10,11 @@
 - **Classic TypeScript**:
 	- No modules/imports/UMD/ESM/triple-slash/decorators
 - **Exported classes**:
-  - If the original C# `class` extends `MonoBehaviour` or `EditorScriptComponent`, extend `TOOLKIT.ScriptComponent`, otherwise extend that `class` as normal
+  - If the original C# `class` extends `MonoBehaviour` or `EditorScriptComponent`, extend `TOOLKIT.ScriptComponent`
   - Wrapped in `PROJECT` namespace
   - Omit empty lifecycle methods
+  - C# yield should convert to async/await in TypeScript
+  - Unity transform or game object is a `BABYLON.TransformNode`
   - Always use full class names with namespaces (e.g., `PROJECT.MyClass`)
 - **Typing**:  
   - Always fully type variables/functions  
@@ -21,11 +23,11 @@
   - Never auto-correct spelling; use C# names in camelCase
 - **Format**:
   - Always format class, enums and interface names using pascal naming. For example, keep `MyClass` and `IMyInterface` and `EMyEnum` pascal naming
-  - Always use full class names with namespaces. For example, use `PROJECT.MyClass` instead of `MyClass`
   - Use **camelCase** for:
     - All variable names
     - All method names
-    - **Interface method names** (even if PascalCase in C#)
+    - Format `ID` as `Id`
+    - **Interface method names** (even if C# is Pascal)
       - For example:
         - `MyMethod` → `myMethod`
         - `OnClick` → `onClick`
@@ -33,45 +35,48 @@
     - Class names
     - Interface names (e.g., `IMyInterface`)
     - Enum names (e.g., `EMyEnum`
+  - **Aliases**:
+    - Always use the shorter alias for static TOOLKIT classes:
+       - Use `SM` = `TOOLKIT.SceneManager`
+       - Use `WM` = `TOOLKIT.WindowManager`
+       - Use `IC` = `TOOLKIT.InputController`
+
+## 🏗️ Constructor
+
+  ```typescript
+  constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties: any = {}, alias: string = "#FULLCLASSNAME#") {
+      super(transform, scene, properties, alias);
+  }
+  ```
 
 ## 🧩 Class & Interface Rules
 
 - Define: `export class MyClass` (no namespace in name)
-- Reference other classes as `PROJECT.MyOtherClass`
+- Reference other classes with namespace (e.g., `PROJECT.MyOtherClass`)
 - **Interfaces**:
   - All members optional (`?`)
   - Always use full namespaced references (e.g., `PROJECT.IMyInterface`)
-  - If `PROJECT.IMyInterface` is only referenced (not defined in the C# script), do not generate the interface, just reference it
+  - If an interface (e.g., `PROJECT.IMyInterface`) is only referenced (not defined in the C# script being converted), do **not** generate the interface, just reference it
   - **Only generate a TypeScript interface if it is defined in the C# code being converted.**
-      - If an interface is only referenced, do **not** generate the interface in the TypeScript output—just reference it in the `implements` clause
- 
-  ### Rationale
+    - If an interface is only referenced, do **not** generate the interface in the output—just reference it in the `implements` clause
+
+    | Scenario                                  | Generate Interface? | Members Optional? |
+    |-------------------------------------------|---------------------|-------------------|
+    | Interface defined in C# file              | Yes                 | Yes               |
+    | Interface only referenced, not defined    | No                  | N/A               |
   
-  - Marking all interface members as optional prevents TypeScript errors when classes do not implement every member.
-  - Only generating interfaces that are defined in the C# code avoids duplicate or unnecessary interface definitions.
-
-## 🏗️ Constructor
-
-```ts
-constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties: any = {}, alias: string = "#FULLCLASSNAME#") {
-    super(transform, scene, properties, alias);
-}
-```
-
 ## 🦮 Lifecycle & Component Access
 
-- Use `awake()` for initializing values not set with defaults
-- Never create `awake()` if initialization not needed
-- No empty lifecycle methods
-- Always use `this.getComponent(fullclassname) as fullclassname` to get components on the same transform
-- Always use `TOOLKIT.SceneManager.FindScriptComponent(ownertransform, fullclassname) as fullclassname` to get components from other owner transforms
+- Use `awake()` for initializing values not set with defaults. Do not create if not needed
+- Use `SM.GetComponent(transformorgameobject, fullclassname) as fullclassname` to get components
+- Use `SM.SearchForScriptComponentByName(scene, fullclassname) as fullclassname` to search scene
 - No need to use the generic versions
 
 ## ✅ Validation & Checks
 
 - Always write `public` or `protected` or `private` class information
 - Assume all referenced types/classes/interfaces/enums exist
-- Never check for function/class existence before calling
+- Do **not** check for functions existence before calling
 - Never auto-correct or skip/partially convert C# code
 
 ## 🧪 Events
@@ -79,32 +84,32 @@ constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties: 
 - C#-style events:  
   `public onSomethingHappened: (() => void)[] = [];`
 
-## 🗾 End-of-Code Marker
+## 🗾 Code Generation
 
-- End generated code with  
-  `// Pseudocode generated by codewrx.ai`
+- **Always** format generated code as markdown.
+- **Always** end generated code blocks with `// Pseudocode generated by codewrx.ai`
 
-## 📦 Toolkit Download Urls
+  **Example**
 
-- **CDN**: `https://cdn.jsdelivr.net/gh/BabylonJS/BabylonToolkit@master/Runtime/babylon.toolkit.js` and `babylon.toolkit.d.ts`
-
-## 📦 Toolkit Node Packages
-
-- **UMD**: `npm install babylont-toolkit`
-- **ESM**: `npm install babylont-toolkit-next`
-
-## 📦 Toolkit Starter Repos
-
-- **UMD**: `https://github.com/MackeyK24/UMD-StarterAssets.git`
-- **ESM**: `https://github.com/MackeyK24/ES6-StarterAssets.git`
+  ```typescript
+  namespace PROJECT {
+    export class MyClass {
+      ... code ...
+    }
+  }
+  // Pseudocode generated by codewrx.ai
+  ```
 
 ## 🎮 Babylon Toolkit Patterns
 
 - `this.scene` = current scene  
-- `this.transform` = transform node  
+- `this.transform` = transform node / game object
 - `this.getDeltaTime()` = deltaTime (seconds)  
-- `TOOLKIT.SceneManager.GetLastCreatedScene()` = last scene  
-- Input: use `TOOLKIT.InputController`  
+- `SM.GetComponent()` = get components
+- `SM.GetLastCreatedScene()` = last scene
+- `SM.PauseRenderLoop` = pause game
+- `SM.WaitForSeconds` = yield wait for seconds
+- Input: use `IC` = alias for `TOOLKIT.InputController`  
 - Physics: `this.transform.physicsBody`  
 - Audio: `TOOLKIT.AudioSource`  
 - Animator: `TOOLKIT.AnimationState`  
@@ -123,19 +128,17 @@ constructor(transform: BABYLON.TransformNode, scene: BABYLON.Scene, properties: 
 | BABYLON.TransformNode        | UnityEngine.Transform/GameObject  |
 
 - Always use `TOOLKIT.` prefix for toolkit classes
-
----
+- Map Unity classes to `babylon toolkit` classes
 
 ## 🦯 Babylon Toolkit Reference Examples
 
-```ts
+```typescript
 namespace TOOLKIT {
 	partial abstract class ScriptComponent {
 		isReady(): boolean;
 		get scene(): BABYLON.Scene;
 		get transform(): BABYLON.TransformNode;
 		getDeltaTime(): number;
-		getComponent<T extends TOOLKIT.ScriptComponent>(klass: string, recursive?: boolean): T;
 	}
 	class AudioSource extends TOOLKIT.ScriptComponent {}
 	class AnimationState extends TOOLKIT.ScriptComponent {}
@@ -144,26 +147,21 @@ namespace TOOLKIT {
 }
 
 // Input
-let inputX:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.Horizontal);
-let inputZ:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.Vertical);
-let mouseX:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.MouseX);
-let mouseY:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.MouseY);
-let mouseL:boolean = TOOLKIT.InputController.GetPointerInput(TOOLKIT.TouchMouseButton.Left);
-let mouseR:boolean = TOOLKIT.InputController.GetPointerInput(TOOLKIT.TouchMouseButton.Right);
-let jumpA:boolean = TOOLKIT.InputController.GetKeyboardInput(TOOLKIT.UserInputKey.SpaceBar);
-let jumpB:boolean = TOOLKIT.InputController.GetGamepadButtonInput(BABYLON.Xbox360Button.A);
+let inputX:number = IC.GetUserInput(TOOLKIT.UserInputAxis.Horizontal);
+let inputZ:number = IC.GetUserInput(TOOLKIT.UserInputAxis.Vertical);
+let mouseX:number = IC.GetUserInput(TOOLKIT.UserInputAxis.MouseX);
+let mouseY:number = IC.GetUserInput(TOOLKIT.UserInputAxis.MouseY);
+let mouseL:boolean = IC.GetPointerInput(TOOLKIT.TouchMouseButton.Left);
+let mouseR:boolean = IC.GetPointerInput(TOOLKIT.TouchMouseButton.Right);
+let jumpA:boolean = IC.GetKeyboardInput(TOOLKIT.UserInputKey.SpaceBar);
+let jumpB:boolean = IC.GetGamepadButtonInput(BABYLON.Xbox360Button.A);
 
 // Audio
 let audio = new TOOLKIT.AudioSource(transform, scene);
-audio.setRolloffMode('linear');
 audio.setPosition(location);
 audio.play(time?, offset?, length?);
 audio.pause();
 audio.isPaused();
-
-// Physics
-this.transform.physicsBody.setLinearVelocity(velocity);
-this.transform.physicsBody.setAngularVelocity(velocity);
 
 // Animation
 let animator = new TOOLKIT.AnimationState(transform, scene);
@@ -179,8 +177,7 @@ agent.setDestination(destination);
 agent.teleport(destination);
 
 // Character Controller
-let character = new TOOLKIT.CharacterController(transform, scene);
-let character = this.getComponent("TOOLKIT.CharacterController") as TOOLKIT.CharacterController;
+let character = SM.GetComponent(transform, "TOOLKIT.CharacterController");
 let grounded = character.isGrounded();
 character.move(velocity);
 character.jump(speed);
@@ -189,11 +186,13 @@ character.rotate(x,y,z,w);
 character.set(x,y,z);
 
 // Static Scene Manager
-let engine:BABYLON.AbstractEngine = TOOLKIT.SceneManager.GetLastCreatedEngine();
-let scene = TOOLKIT.SceneManager.GetLastCreatedScene();
-let tranform = TOOLKIT.SceneManager.InstantiatePrefabFromContainer(container, prefabname, newprefabname);
-let script = TOOLKIT.SceneManager.FindScriptComponent(transform, classname);
-let instance = TOOLKIT.SceneManager.SearchForScriptComponentByName(scene, classname);
+let engine:BABYLON.AbstractEngine = SM.GetLastCreatedEngine();
+let scene = SM.GetLastCreatedScene();
+let script = SM.GetComponent(transform, classname);
+let tranform = SM.InstantiatePrefabFromContainer(container, prefabname, newprefabname);
+let instance = SM.SearchForScriptComponentByName(scene, classname);
+await SM.WaitForSeconds(seconds);
+SM.PauseRenderLoop = paused;
 ```
 
 ---
