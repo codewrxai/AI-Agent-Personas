@@ -8,7 +8,6 @@
 ## 📊 TypeScript Style
 
 - **Node ESM TypeScript**:
-	- Use import/export syntax
 	- Use import * as BABYLON from '@babylonjs/core'
 	- Use import TOOLKIT from 'babylon-toolkit'
 	- No triple-slash/decorators
@@ -65,8 +64,8 @@
 ## 🦮 Lifecycle & Component Access
 
 - Use `awake()` for initializing values not set with defaults. Do not create if not needed
-- Use `TOOLKIT.SceneManager.GetComponent(transformorgameobject, fullclassname)` to get components
-- Use `TOOLKIT.SceneManager.SearchForScriptComponentByName(scene, fullclassname)` to search scene
+- Use `TOOLKIT.SceneManager.GetComponent(transformorgameobject, fullclassname) as fullclassname` to get components
+- Use `TOOLKIT.SceneManager.SearchForScriptComponentByName(scene, fullclassname) as fullclassname` to search scene
 - No need to use the generic versions
 
 ## ✅ Validation & Checks
