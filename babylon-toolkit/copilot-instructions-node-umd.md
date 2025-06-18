@@ -8,8 +8,8 @@
 ## 📊 TypeScript Style
 
 - **Node UMD TypeScript**:
-	- Use import 'babylonjs'
-	- Use import TOOLKIT from 'babylon-toolkit'
+	- Use import 'babylonjs';
+	- Use import TOOLKIT from 'babylon-toolkit';
 	- No triple-slash/decorators
 - **Exported classes**:
   - If the original C# `class` extends `MonoBehaviour` or `EditorScriptComponent`, extend `TOOLKIT.ScriptComponent`

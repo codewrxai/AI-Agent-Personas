@@ -8,8 +8,9 @@
 ## 📊 TypeScript Style
 
 - **Node ESM TypeScript**:
-	- Use import * as BABYLON from '@babylonjs/core'
-	- Use import TOOLKIT from 'babylon-toolkit'
+	- Use import { Engine } from '@babylonjs/core/Engines/engine'
+	- Use import { Scene } from '@babylonjs/core/scene'
+	- Use import TOOLKIT from 'babylon-toolkit-next'
 	- No triple-slash/decorators
 - **Exported classes**:
   - If the original C# `class` extends `MonoBehaviour` or `EditorScriptComponent`, extend `TOOLKIT.ScriptComponent`
