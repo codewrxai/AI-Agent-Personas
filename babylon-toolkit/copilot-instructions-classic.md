@@ -35,11 +35,6 @@
     - Class names
     - Interface names (e.g., `IMyInterface`)
     - Enum names (e.g., `EMyEnum`
-  - **Aliases**:
-    - Always use the shorter alias for static TOOLKIT classes:
-       - Use `SM` = `TOOLKIT.SceneManager`
-       - Use `WM` = `TOOLKIT.WindowManager`
-       - Use `IC` = `TOOLKIT.InputController`
 
 ## 🏗️ Constructor
 
@@ -68,8 +63,8 @@
 ## 🦮 Lifecycle & Component Access
 
 - Use `awake()` for initializing values not set with defaults. Do not create if not needed
-- Use `SM.GetComponent(transformorgameobject, fullclassname) as fullclassname` to get components
-- Use `SM.SearchForScriptComponentByName(scene, fullclassname) as fullclassname` to search scene
+- Use `TOOLKIT.SceneManager.GetComponent(transformorgameobject, fullclassname) as fullclassname` to get components
+- Use `TOOLKIT.SceneManager.SearchForScriptComponentByName(scene, fullclassname) as fullclassname` to search scene
 - No need to use the generic versions
 
 ## ✅ Validation & Checks
@@ -105,10 +100,10 @@
 - `this.scene` = current scene  
 - `this.transform` = transform node / game object
 - `this.getDeltaTime()` = deltaTime (seconds)  
-- `SM.GetComponent()` = get components
-- `SM.GetLastCreatedScene()` = last scene
-- `SM.PauseRenderLoop` = pause game
-- `SM.WaitForSeconds` = yield wait for seconds
+- `TOOLKIT.SceneManager.GetComponent()` = get components
+- `TOOLKIT.SceneManager.GetLastCreatedScene()` = last scene
+- `TOOLKIT.SceneManager.PauseRenderLoop` = pause game
+- `TOOLKIT.SceneManager.WaitForSeconds` = yield wait for seconds
 - Input: use `IC` = alias for `TOOLKIT.InputController`  
 - Physics: `this.transform.physicsBody`  
 - Audio: `TOOLKIT.AudioSource`  
@@ -147,14 +142,14 @@ namespace TOOLKIT {
 }
 
 // Input
-let inputX:number = IC.GetUserInput(TOOLKIT.UserInputAxis.Horizontal);
-let inputZ:number = IC.GetUserInput(TOOLKIT.UserInputAxis.Vertical);
-let mouseX:number = IC.GetUserInput(TOOLKIT.UserInputAxis.MouseX);
-let mouseY:number = IC.GetUserInput(TOOLKIT.UserInputAxis.MouseY);
-let mouseL:boolean = IC.GetPointerInput(TOOLKIT.TouchMouseButton.Left);
-let mouseR:boolean = IC.GetPointerInput(TOOLKIT.TouchMouseButton.Right);
-let jumpA:boolean = IC.GetKeyboardInput(TOOLKIT.UserInputKey.SpaceBar);
-let jumpB:boolean = IC.GetGamepadButtonInput(BABYLON.Xbox360Button.A);
+let inputX:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.Horizontal);
+let inputZ:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.Vertical);
+let mouseX:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.MouseX);
+let mouseY:number = TOOLKIT.InputController.GetUserInput(TOOLKIT.UserInputAxis.MouseY);
+let mouseL:boolean = TOOLKIT.InputController.GetPointerInput(TOOLKIT.TouchMouseButton.Left);
+let mouseR:boolean = TOOLKIT.InputController.GetPointerInput(TOOLKIT.TouchMouseButton.Right);
+let jumpA:boolean = TOOLKIT.InputController.GetKeyboardInput(TOOLKIT.UserInputKey.SpaceBar);
+let jumpB:boolean = TOOLKIT.InputController.GetGamepadButtonInput(BABYLON.Xbox360Button.A);
 
 // Audio
 let audio = new TOOLKIT.AudioSource(transform, scene);
@@ -177,7 +172,7 @@ agent.setDestination(destination);
 agent.teleport(destination);
 
 // Character Controller
-let character = SM.GetComponent(transform, "TOOLKIT.CharacterController");
+let character = TOOLKIT.SceneManager.GetComponent(transform, "TOOLKIT.CharacterController");
 let grounded = character.isGrounded();
 character.move(velocity);
 character.jump(speed);
@@ -186,13 +181,13 @@ character.rotate(x,y,z,w);
 character.set(x,y,z);
 
 // Static Scene Manager
-let engine:BABYLON.AbstractEngine = SM.GetLastCreatedEngine();
-let scene = SM.GetLastCreatedScene();
-let script = SM.GetComponent(transform, classname);
-let tranform = SM.InstantiatePrefabFromContainer(container, prefabname, newprefabname);
-let instance = SM.SearchForScriptComponentByName(scene, classname);
-await SM.WaitForSeconds(seconds);
-SM.PauseRenderLoop = paused;
+let engine:BABYLON.AbstractEngine = TOOLKIT.SceneManager.GetLastCreatedEngine();
+let scene = TOOLKIT.SceneManager.GetLastCreatedScene();
+let script = TOOLKIT.SceneManager.GetComponent(transform, classname);
+let tranform = TOOLKIT.SceneManager.InstantiatePrefabFromContainer(container, prefabname, newprefabname);
+let instance = TOOLKIT.SceneManager.SearchForScriptComponentByName(scene, classname);
+await TOOLKIT.SceneManager.WaitForSeconds(seconds);
+TOOLKIT.SceneManager.PauseRenderLoop = paused;
 ```
 
 ---
